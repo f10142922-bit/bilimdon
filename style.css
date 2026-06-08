@@ -7,6 +7,7 @@
     --border-color: #e5e5e5;
     --text-dark: #3c3c3c;
     --text-gray: #777;
+    --bg-color-rgb: 247, 249, 250;
     --card-bg: #ffffff;
 }
 
@@ -16,18 +17,15 @@ body.dark-theme {
     --text-dark: #f0f0f0;
     --text-gray: #aaa;
     --border-color: #333;
+    --bg-color-rgb: 26, 26, 26;
     --card-bg: #2a2a2a;
 }
-
-body.dark-theme .icon-btn,
-body.dark-theme .help-btn,
-body.dark-theme .lang-sel { background-color: var(--card-bg); color: var(--text-dark); border-color: var(--border-color); }
 
 body {
     margin: 0;
     padding: 0;
     /* Professional Bilimdon foni */
-    background: linear-gradient(rgba(247, 249, 250, 0.88), rgba(247, 249, 250, 0.88)), 
+    background: linear-gradient(rgba(var(--bg-color-rgb), 0.88), rgba(var(--bg-color-rgb), 0.88)), 
                 url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1350&q=80');
     background-size: cover;
     background-position: center;
@@ -45,7 +43,7 @@ body {
 
 /* Tungi rejimda fonni qorong'ulash */
 body.dark-theme {
-    background: linear-gradient(rgba(26, 26, 26, 0.94), rgba(26, 26, 26, 0.94)), 
+    background: linear-gradient(rgba(var(--bg-color-rgb), 0.94), rgba(var(--bg-color-rgb), 0.94)), 
                 url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1350&q=80');
     background-size: cover;
     background-position: center;
@@ -264,12 +262,15 @@ body.dark-theme .icon-btn { background: var(--card-bg); color: var(--text-dark);
 .rating-list { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
 .rating-item {
     display: flex; justify-content: space-between; padding: 12px;
-    background: var(--card-bg); border-radius: 12px; font-weight: bold;
+    background: var(--card-bg); border-radius: 12px; 
+    font-weight: bold; font-size: 14px;
     border: 1px solid var(--border-color);
+    transition: transform 0.2s;
 }
 .rating-item.current-user {
     background: #fff5f0; border-color: var(--primary-color); color: var(--primary-color);
     box-shadow: 0 4px 10px rgba(255, 114, 53, 0.2);
+    transform: scale(1.02);
 }
 
 .shop-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }

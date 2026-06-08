@@ -6,6 +6,9 @@
     <title>Bilimdon - Quiz App</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF7235">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bilimdon">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -122,6 +125,7 @@
     <div class="app-container">
         <div id="homeContainer">
             <h1 class="app-title bounce-in">Bilimdon</h1>
+            <p id="appSlogan" style="margin-top: -10px; margin-bottom: 10px; color: var(--primary-color); font-weight: bold; font-size: 14px; opacity: 0.8;"></p>
             <div id="userGreeting" class="user-greeting"></div>
             <p id="appSubtitle" class="app-subtitle">Darajani tanlang!</p>
             <button id="dailyBonusBtn" class="daily-bonus-btn" onclick="gameLogic.claimDailyBonus()">🎁 Kunlik Bonus</button>

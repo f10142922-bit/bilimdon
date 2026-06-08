@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bilimdon-v3'; // Versiyani v3 ga o'zgartirdik
+const CACHE_NAME = 'bilimdon-v6'; // Versiya yangilandi
 const ASSETS = [
     './',
     './index.html',

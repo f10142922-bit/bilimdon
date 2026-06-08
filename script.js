@@ -119,14 +119,15 @@ const gameLogic = {
                 setTimeout(() => { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 500); }, 300);
             }
         }, 40);
-        this.applyLanguage(localStorage.getItem('appLang') || 'uz');
+        const savedLang = localStorage.getItem('appLang') || 'uz';
+        this.applyLanguage(savedLang);
+        
         const userName = localStorage.getItem('user');
         document.getElementById('userNameInput').value = userName;
         document.getElementById('soundToggle').checked = appState.settings.sound;
         document.getElementById('vibrateToggle').checked = appState.settings.vibrate;
         document.getElementById('darkModeToggle').checked = appState.settings.darkMode;
         this.applyTheme();
-        this.updateStats(false); this.updateGreeting(); this.updateDailyBonusUI();
     },
     saveName() { 
         const newName = document.getElementById('userNameInput').value;
@@ -165,7 +166,8 @@ const gameLogic = {
         document.getElementById('levelHardDesc').innerText = '100 ' + ui.desc;
         document.getElementById('levelExpertDesc').innerText = '100 ' + ui.desc;
         
-        document.getElementById('settingsTitle').innerText = ui.settings; document.getElementById('shopTitle').innerText = ui.shop;
+        document.getElementById('settingsTitle').innerText = ui.settings; 
+        document.getElementById('shopTitle').innerText = ui.shop;
         document.getElementById('stageTitle').innerText = ui.countTitle;
         document.getElementById('ratingTitle').innerText = ui.rating;
         
@@ -180,13 +182,17 @@ const gameLogic = {
         document.getElementById('shopSkipLabel').innerText = ui.shopSkip;
 
         document.querySelectorAll('.lang-sel').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
-        this.updateStats(false); this.updateGreeting(); this.updateDailyBonusUI();
+        this.updateStats(false); this.updateGreeting(); this.updateDailyBonusUI(); this.checkAchievements();
     },
     updateStats(animate = true) {
-        // Darajani hisoblash (har 500 XP bitta daraja)
+        const oldLevel = Math.floor(Math.max(0, appState.xp - 25) / 500) + 1;
         const level = Math.floor(appState.xp / 500) + 1;
         document.getElementById('userLevelText').innerText = 'Lvl ' + level;
         
+        if (animate && level > oldLevel && oldLevel > 0) {
+            uiAction.showToast(`Yangi daraja: ${level}! 🏆`);
+        }
+
         document.getElementById('highScoreText').innerText = localStorage.getItem('hs_' + appState.lang) || 0;
         document.getElementById('totalCoinsText').innerText = appState.coins;
         document.getElementById('count5050').innerText = appState.helps['5050'];
@@ -278,14 +284,17 @@ const gameLogic = {
         const titleEl = document.getElementById('currentStageTitle');
         if (titleEl) titleEl.innerText = "Bosqich " + stageNum;
         
-        const pool = testData[appState.lang][appState.level];
-        if (!pool || pool.length === 0) return alert("Savollar topilmadi!");
+        let pool = testData[appState.lang][appState.level];
+        if (!pool || pool.length === 0) {
+            // Agar tanlangan tilda savol bo'lmasa, o'zbek tilidagidan vaqtincha foydalanish
+            pool = testData['uz'][appState.level];
+            uiAction.showToast("Bu tilda savollar kam, uz tilidan yuklandi.");
+        }
 
-        // Savollarni nusxalash va aralashtirish
         const all = [...pool];
         all.sort(() => Math.random() - 0.5);
         
-        // Har bir bosqich uchun 5 ta tasodifiy savol (pool kichik bo'lsa borini oladi)
+        // Har bir bosqich uchun 5 ta savol
         appState.questions = all.slice(0, 5);
         
         uiAction.closeStageModal();
@@ -406,19 +415,20 @@ const gameLogic = {
         if (!list) return;
         list.innerHTML = '';
 
-        // Simulyatsiya qilingan reyting ma'lumotlari
-        const mockUsers = [
-            { name: "MasterCoder", score: 2500 },
-            { name: "DevWizard", score: 2100 },
-            { name: "AlgoKing", score: 1850 },
-            { name: "NoobDev", score: 1200 }
+        // Reytingni biroz realroq qilish
+        let mockUsers = [
+            { name: "MasterCoder", score: 2800 },
+            { name: "DevWizard", score: 2450 },
+            { name: "AlgoKing", score: 1900 },
+            { name: "User_99", score: 800 },
+            { name: "NoobDev", score: 450 }
         ];
 
-        // Joriy foydalanuvchini qo'shish
         const currentUser = { 
             name: localStorage.getItem('user') + " (Siz)", 
             score: Number(localStorage.getItem('totalCoins')) || appState.coins 
         };
+
         mockUsers.push(currentUser);
         mockUsers.sort((a, b) => b.score - a.score);
 
