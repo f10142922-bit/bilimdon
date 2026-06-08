@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bilimdon-v2';
+const CACHE_NAME = 'bilimdon-v3'; // Versiyani v3 ga o'zgartirdik
 const ASSETS = [
     './',
     './index.html',
@@ -9,6 +9,7 @@ const ASSETS = [
 
 // O'rnatish va fayllarni keshga saqlash
 self.addEventListener('install', (e) => {
+    self.skipWaiting(); // Yangi versiya kelishi bilan kutib turmasdan o'rnatish
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
     );
@@ -17,6 +18,7 @@ self.addEventListener('install', (e) => {
 // Eskirgan keshni tozalash
 self.addEventListener('activate', (event) => {
     event.waitUntil(
+        clients.claim(), // Darhol boshqaruvni qo'lga olish
         caches.keys().then((keys) => Promise.all(
             keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
         ))

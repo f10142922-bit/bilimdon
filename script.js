@@ -130,10 +130,10 @@ const gameLogic = {
     },
     saveName() { 
         const newName = document.getElementById('userNameInput').value;
-        if (!newName.trim()) return alert("Ism bo'sh bo'lishi mumkin emas!");
+        if (!newName.trim()) return uiAction.showToast("Ism bo'sh bo'lishi mumkin emas!");
         localStorage.setItem('user', newName); 
         this.updateGreeting();
-        alert("Ism muvaffaqiyatli saqlandi! ✅");
+        uiAction.showToast("Ism muvaffaqiyatli saqlandi! ✅");
     },
     toggleSetting(type) {
         appState.settings[type] = document.getElementById(type + 'Toggle').checked;
@@ -242,10 +242,11 @@ const gameLogic = {
     buyHelp(type) {
         const prices = { '5050': 100, 'skip': 150, 'time': 50 };
         const price = prices[type];
-        if (appState.coins < price) return alert(testData[appState.lang].ui.notEnoughCoins);
+        if (appState.coins < price) return uiAction.showToast(testData[appState.lang].ui.notEnoughCoins);
         appState.coins -= price; appState.helps[type]++;
         localStorage.setItem('totalCoins', appState.coins);
         localStorage.setItem('helps', JSON.stringify(appState.helps)); this.updateStats();
+        uiAction.showToast("Sotib olindi! 🛒");
     },
     openLevelSelection(l) { 
         appState.level = l; 
@@ -275,7 +276,7 @@ const gameLogic = {
     startStage(stageNum) {
         appState.currentStage = stageNum;
         const titleEl = document.getElementById('currentStageTitle');
-        if (titleEl) titleEl.innerText = "Stage " + stageNum;
+        if (titleEl) titleEl.innerText = "Bosqich " + stageNum;
         
         const pool = testData[appState.lang][appState.level];
         if (!pool || pool.length === 0) return alert("Savollar topilmadi!");
@@ -448,6 +449,12 @@ const uiAction = {
         m.style.display = isOpen ? 'none' : 'flex'; 
         if (!isOpen) gameLogic.renderRating();
     },
+    showToast(msg) {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.innerText = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    },
     openStageModal() { document.getElementById('stageModal').style.display = 'flex'; },
     closeStageModal() { document.getElementById('stageModal').style.display = 'none'; },
     backToHome() {
@@ -494,12 +501,14 @@ const uiAction = {
 };
 
 const audio = {
+    ctx: null,
     play(f) {
+        if (!appState.settings.sound) return;
         try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator(); const g = ctx.createGain();
-            osc.frequency.value = f; g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
-            osc.connect(g); g.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.3);
+            if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = this.ctx.createOscillator(); const g = this.ctx.createGain();
+            osc.frequency.value = f; g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.3);
+            osc.connect(g); g.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + 0.3);
         } catch (e) { }
     }
 };
