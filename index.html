@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uz" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bilimdon - Quiz App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF7235">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Loader -->
+    <div id="loader" class="loader-wrapper">
+        <div class="loader-content">
+            <div class="loader-logo">🎓</div>
+            <div class="loader-text">Bilimdon</div>
+            <div class="loader-bar"><div id="loadProgress" class="loader-progress"></div></div>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="top-bar">
+        <div class="stats-group">
+            <div class="stat-item level-stat">🏅 <span id="userLevelText">Lvl 1</span></div>
+            <div class="stat-item trophy-stat">🏆 <span id="highScoreText">0</span></div>
+            <div class="stat-item coin-stat">💰 <span id="totalCoinsText">0</span></div>
+        </div>
+        <div class="top-btns">
+            <button class="icon-btn rating-btn" onclick="uiAction.toggleRating()">📊</button>
+            <button class="icon-btn shop-btn" onclick="uiAction.toggleShop()">🛒</button>
+            <button class="icon-btn settings-btn" onclick="uiAction.toggleSettings()">⚙️</button>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="uiAction.toggleRating()">&times;</span>
+            <h3 id="ratingTitle">Reyting</h3>
+            <div id="ratingList" class="rating-list"></div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="uiAction.toggleSettings()">&times;</span>
+            <h3 id="settingsTitle">Sozlamalar</h3>
+            <div class="name-input-group">
+                <input type="text" id="userNameInput" placeholder="Ismingiz...">
+                <button class="save-name-btn" onclick="gameLogic.saveName()">💾</button>
+            </div>
+            
+            <div class="settings-toggles">
+                <div class="toggle-item" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <span id="soundLabel">Ovoz</span>
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked onchange="gameLogic.toggleSetting('sound')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <span id="vibrateLabel">Vibratsiya</span>
+                    <label class="switch">
+                        <input type="checkbox" id="vibrateToggle" checked onchange="gameLogic.toggleSetting('vibrate')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <span id="darkModeLabel">Tungi rejim</span>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle" onchange="gameLogic.toggleSetting('darkMode')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <p id="settingsLangLabel" style="margin-top: 20px;">Tilni tanlang:</p>
+            <div class="lang-options">
+                <button class="lang-sel" data-lang="uz" onclick="gameLogic.changeLanguage('uz')">O'zbekcha</button>
+                <button class="lang-sel" data-lang="en" onclick="gameLogic.changeLanguage('en')">English</button>
+                <button class="lang-sel" data-lang="ru" onclick="gameLogic.changeLanguage('ru')">Русский</button>
+            </div>
+            <button id="resetBtn" class="danger-btn" onclick="gameLogic.resetProgress()">Tarixni tozalash</button>
+        </div>
+    </div>
+
+    <div id="shopModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="uiAction.toggleShop()">&times;</span>
+            <h3 id="shopTitle">Magazin</h3>
+            <div class="shop-list">
+                <div class="shop-item">
+                    <span id="shop5050Label">🌓 50/50</span>
+                    <button class="buy-btn" onclick="gameLogic.buyHelp('5050')">💰 100</button>
+                </div>
+                <div class="shop-item">
+                    <span id="shopTimeLabel">⏰ +10s Vaqt</span>
+                    <button class="buy-btn" onclick="gameLogic.buyHelp('time')">💰 50</button>
+                </div>
+                <div class="shop-item">
+                    <span id="shopSkipLabel">⏭ Skip</span>
+                    <button class="buy-btn" onclick="gameLogic.buyHelp('skip')">💰 150</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stageModal" class="modal">
+        <div class="modal-content stage-modal-content">
+            <span class="close-btn" onclick="uiAction.closeStageModal()">&times;</span>
+            <h3 id="stageTitle">Bosqichni tanlang</h3>
+            <div id="stageGrid" class="stage-grid">
+                <!-- 100 ta bosqich JS orqali qo'shiladi -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Containers -->
+    <div class="app-container">
+        <div id="homeContainer">
+            <h1 class="app-title bounce-in">Bilimdon</h1>
+            <div id="userGreeting" class="user-greeting"></div>
+            <p id="appSubtitle" class="app-subtitle">Darajani tanlang!</p>
+            <button id="dailyBonusBtn" class="daily-bonus-btn" onclick="gameLogic.claimDailyBonus()">🎁 Kunlik Bonus</button>
+            
+            <div class="levels-list">
+                <button class="level-card easy" onclick="gameLogic.openLevelSelection('easy')">
+                    <span class="level-icon">🌱</span>
+                    <div class="level-info"><h3 id="levelEasyTitle">Oson</h3><p id="levelEasyDesc">100 Bosqich</p></div>
+                </button>
+                <button class="level-card hard" onclick="gameLogic.openLevelSelection('hard')">
+                    <span class="level-icon">🔥</span>
+                    <div class="level-info"><h3 id="levelHardTitle">Qiyin</h3><p id="levelHardDesc">100 Bosqich</p></div>
+                </button>
+                <button class="level-card expert" onclick="gameLogic.openLevelSelection('expert')">
+                    <span class="level-icon">🏆</span>
+                    <div class="level-info"><h3 id="levelExpertTitle">Juda Qiyin</h3><p id="levelExpertDesc">100 Bosqich</p></div>
+                </button>
+            </div>
+        </div>
+
+        <div id="quizContainer" style="display: none;">
+            <div class="quiz-header">
+                <button class="back-btn" onclick="uiAction.backToHome()">✕</button>
+                <div id="currentStageTitle" style="font-weight: bold; color: var(--primary-color);">Stage 1</div>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <div class="quiz-helps">
+                    <button id="btn5050" class="help-btn" onclick="gameLogic.use5050()">🌓 <span id="count5050">0</span></button>
+                    <button id="btnTime" class="help-btn" onclick="gameLogic.useExtraTime()">⏰ <span id="countTime">0</span></button>
+                    <button id="btnSkip" class="help-btn" onclick="gameLogic.useSkip()">⏭ <span id="countSkip">0</span></button>
+                </div>
+            </div>
+            <div class="quiz-card">
+                <h2 id="questionText">...</h2>
+                <div id="optionsList" class="options-list"></div>
+            </div>
+            <div class="quiz-footer">
+                <div class="timer-container"><div id="timerBar" class="timer-bar"></div></div>
+                <p id="quizProgressCounter">0 / 0</p>
+                <div id="statusDots" class="status-dots"></div>
+            </div>
+        </div>
+
+        <div id="resultContainer" style="display: none;">
+            <h2 id="resultText" class="app-title bounce-in">0 / 0</h2>
+            <p id="resultMessage" class="app-subtitle">...</p>
+            <div id="earnedCoinsDisplay" class="coin-reward">💰 +0</div>
+            <button class="main-btn" onclick="uiAction.showResultOk()">OK</button>
+            <div id="confettiContainer"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+        }
+    </script>
+</body>
+</html>
